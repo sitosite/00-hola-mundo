@@ -25,8 +25,7 @@
   @apply cursor-pointer;
 }
 
-.is-reading .book-cover,
-.book:hover .book-cover {
+.is-reading .book-cover {
   @apply shadow-[inset_4px_1px_3px_#ffffff60,inset_0_-1px_2px_#00000080,10px_0px_10px_-5px_#00000030];
   -webkit-transform: perspective(2000px) rotateY(-30deg);
   transform: perspective(2000px) rotateY(-30deg);
@@ -34,13 +33,11 @@
   transform-style: preserve-3d;
 }
 
-.is-reading .effect,
-.book:hover .effect {
+.is-reading .effect {
   @apply w-10;
 }
 
-.is-reading .book:hover .light,
-.book:hover .light {
+.is-reading .book:hover .light {
   @apply opacity-100 w-[70%];
 }
 .book-inside {
