@@ -37,8 +37,6 @@
 .is-reading .effect,
 .book:hover .effect {
   @apply w-10;
-  /** margin-left:13px;
-  opacity: 0.5; **/
 }
 
 .is-reading .book:hover .light,
