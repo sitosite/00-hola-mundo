@@ -18,6 +18,22 @@ export function Library() {
                 setBooks(data.library);
             })
             .catch(error => console.error(error));
+
+        // Escuchamos cuelquier cambio en el localStorage, para sincronizar pestañas abiertas
+        function handleStorageChange(event) {
+            if (event.key === 'readingBooks') {
+                setReadingBooks(JSON.parse(event.newValue)); // event.newValue contiene el nuevo valor que se guardó en localStorage
+            }
+        }
+
+        // Agrega un listener al evento 'storage'
+        window.addEventListener('storage', handleStorageChange);
+
+        // Regresa una función de limpieza para quitar el listener cuando el componente se desmonta
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+
     }, []);
 
     // Manejamos el estado de los libros que estamos leyendo
@@ -55,8 +71,8 @@ export function Library() {
         <div className='library w-11/12 mx-auto bg-light-bg p-20 px-6 md:px-20 rounded-[40px] shadow-[0_0_60px_60px_rgba(0,0,0,0.1)]'>
             <div className='flex flex-col md:flex-row mb-10 w-full items-center justify-between'>
                 <div className='titles'>
-                    <h1 className='total-nooks font-serif text-accent text-3xl md:text-4xl font-bold mb-2'>Número de libros: {books.length}</h1>
-                    <h2 className='counter__wrapper text-lg md:text-xl font-bold mb-6'>Libros que estamos leyendo: {readingBooks.length}</h2>
+                    <h1 className='total-nooks font-serif text-accent text-3xl md:text-4xl font-bold mb-2'>{books.length} libros disponibles</h1>
+                    <h2 className='counter__wrapper text-lg md:text-xl font-bold mb-6'>{readingBooks.length} en la lista de lectura</h2>
                 </div>
                 <div className='reset'>
                     <button onClick={resetReadingBooks} className='border border-accent2 px-3 py-2 font-bold rounded text-accent2 hover:bg-accent2 hover:text-accent'>Reset</button>
