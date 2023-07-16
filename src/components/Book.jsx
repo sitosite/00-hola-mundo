@@ -4,9 +4,13 @@ import { Tick } from './Tick.jsx'
 
 export function Book({ img, title, ISBN, genre, handleReadingBooks, isReading, book }) {
 
+	// clase del libro dependiendo si lo estamos leyendo o no
 	const className = `book group ${isReading ? 'is-reading' : ''}`
+
+	// icono del libro dependiendo si lo estamos leyendo o no
 	const readingText = isReading ? <Tick /> : <Plus />;
 
+	// caratula del libro
 	const imageStyle = {
 		backgroundImage: `url(${img})`,
 	}
