@@ -13,12 +13,23 @@ export function Library() {
     // Hacemos la petición a la API cuando inicia el componente
     useEffect(() => {
 
-        fetch('https://raw.githubusercontent.com/midudev/pruebas-tecnicas/main/pruebas/01-reading-list/books.json')
+        const controller = new AbortController()
+        const { signal } = controller
+
+        fetch('https://raw.githubusercontent.com/midudev/pruebas-tecnicas/main/pruebas/01-reading-list/books.json', { signal })
             .then(response => response.json())
             .then(data => {
                 setBooks(data.library);
             })
             .catch(error => console.error(error));
+
+        // Si se desmonta el componente, abortamos la petición
+        return () => controller.abort()
+
+    }, []);
+
+    // Sincronizar pestañas abiertas
+    useEffect(() => {
 
         // Escuchamos cuelquier cambio en el localStorage, para sincronizar pestañas abiertas
         function handleStorageChange(event) {
