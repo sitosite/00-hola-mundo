@@ -12,6 +12,7 @@ export function Library() {
 
     // Hacemos la petición a la API cuando inicia el componente
     useEffect(() => {
+
         fetch('https://raw.githubusercontent.com/midudev/pruebas-tecnicas/main/pruebas/01-reading-list/books.json')
             .then(response => response.json())
             .then(data => {
