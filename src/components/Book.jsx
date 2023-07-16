@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
 import { Plus } from './Plus.jsx'
 import { Tick } from './Tick.jsx'
 
-export function Book({ img, title, ISBN, genre, handleReadingBooks, isReading, book }) {
+export const Book = ({ img, title, ISBN, genre, handleReadingBooks, isReading }) => {
 
 	// clase del libro dependiendo si lo estamos leyendo o no
 	const className = `book group ${isReading ? 'is-reading' : ''}`
