@@ -17,8 +17,8 @@ export function Book({ img, title, ISBN, genre, handleReadingBooks, isReading, b
 
 	return (
 		<div className={className}>
-			<div className='book__wrapper relative cursor-pointer' onClick={handleClick}>
-				<div className='hidden group-hover:flex group-[.is-reading]:flex absolute top-2 left-2 z-10 w-[30px] h-[30px] items-center justify-center group-hover:bg-bg group-[.is-reading]:bg-accent rounded'>{readingText}</div>
+			<div className='book__wrapper relative'>
+				<div className='hidden group-hover:flex group-[.is-reading]:flex absolute top-2 left-2 z-10 w-[30px] h-[30px] items-center justify-center group-hover:bg-bg group-[.is-reading]:bg-accent2 group-[.is-reading]:text-accent rounded cursor-pointer' onClick={handleClick}>{readingText}</div>
 				<div className='book__cover relative'>
 					<div className='book-cover' style={imageStyle}>
 						<div className='effect'></div>
