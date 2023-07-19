@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import { Book } from './components/Book.jsx'
 
 export function Library() {
-    const [books, setBooks] = useState([]);
+    const [books, setBooks] = useState([])
+    const [filteredBooks, setFilteredBooks] = useState([])
     const [readingBooks, setReadingBooks] = useState(() => {
         // Obtenemos el array de libros que estamos leyendo del localStorage
         const savedReadingBooks = localStorage.getItem('readingBooks')
         if (savedReadingBooks) return JSON.parse(savedReadingBooks)
         return []
-    });
+    })
+    const [genres, setGenres] = useState([]) // [ 'fantasia', 'terror', 'ciencia ficcion'
 
     // Hacemos la petición a la API cuando inicia el componente
     useEffect(() => {
@@ -19,14 +21,24 @@ export function Library() {
         fetch('https://raw.githubusercontent.com/midudev/pruebas-tecnicas/main/pruebas/01-reading-list/books.json', { signal })
             .then(response => response.json())
             .then(data => {
-                setBooks(data.library);
+                setBooks(data.library)
+                setFilteredBooks(data.library)
             })
-            .catch(error => console.error(error));
+            .catch(error => console.error(error))
 
         // Si se desmonta el componente, abortamos la petición
         return () => controller.abort()
 
-    }, []);
+    }, [])
+
+    // Creamos un array con todos los generos de los libros disponibles a partir de
+    useEffect(() => {
+        if (!books) return
+        const genresMap = books.map(book => book.book.genre)
+        const genresSet = new Set(genresMap)
+        const genresArray = [...genresSet]
+        setGenres(genresArray)
+    }, [books])
 
     // Sincronizar pestañas abiertas
     useEffect(() => {
@@ -34,19 +46,19 @@ export function Library() {
         // Escuchamos cuelquier cambio en el localStorage, para sincronizar pestañas abiertas
         function handleStorageChange(event) {
             if (event.key === 'readingBooks') {
-                setReadingBooks(JSON.parse(event.newValue)); // event.newValue contiene el nuevo valor que se guardó en localStorage
+                setReadingBooks(JSON.parse(event.newValue)) // event.newValue contiene el nuevo valor que se guardó en localStorage
             }
         }
 
         // Agrega un listener al evento 'storage'
-        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange)
 
         // Regresa una función de limpieza para quitar el listener cuando el componente se desmonta
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+            window.removeEventListener('storage', handleStorageChange)
+        }
 
-    }, []);
+    }, [])
 
     // Manejamos el estado de los libros que estamos leyendo
     const handleReadingBooks = (ISBN) => {
@@ -70,7 +82,7 @@ export function Library() {
 
         // Guardamos el array de libros que estamos leyendo en el localStorage
         localStorage.setItem('readingBooks', JSON.stringify(newReadingBooks))
-    };
+    }
 
     // Hacemos reset de la libreria
     const resetReadingBooks = () => {
@@ -81,17 +93,33 @@ export function Library() {
     // Renderizamos los libros
     return (
         <div className='library w-11/12 mx-auto bg-light-bg p-20 px-6 md:px-20 rounded-[40px] shadow-[0_0_60px_60px_rgba(0,0,0,0.1)]'>
-            <div className='flex flex-col md:flex-row mb-10 w-full items-center justify-between'>
+            <div className='flex flex-col md:flex-row w-full items-center justify-between'>
                 <div className='titles'>
-                    <h1 className='total-nooks font-serif text-accent text-3xl md:text-4xl font-bold mb-2'>{books.length} libros disponibles</h1>
+                    <h1 className='total-nooks font-serif text-accent text-3xl md:text-4xl font-bold mb-2'>{filteredBooks.length} libros disponibles</h1>
                     <h2 className='counter__wrapper text-lg md:text-xl font-bold mb-6'>{readingBooks.length} en la lista de lectura</h2>
                 </div>
                 <div className='reset'>
                     <button onClick={resetReadingBooks} className='border border-accent2 px-3 py-2 font-bold rounded text-accent2 hover:bg-accent2 hover:text-accent'>Reset</button>
                 </div>
             </div>
+            <div className="filters flex gap-4 mb-6">
+                <select className='border py-1 px-2' onChange={(e) => {
+                    const genre = e.target.value.toLowerCase()
+                    if (genre === 'all') {
+                        setFilteredBooks(books)
+                    } else {
+                        const originalBooks = [...books]
+                        setFilteredBooks(originalBooks.filter(book => book.book.genre.toLowerCase() === genre))
+                    }
+                }}>
+                    <option value="all">Todos los géneros</option>
+                    {genres.map((genre, index) => {
+                        return <option key={index} value={genre}>{genre}</option>
+                    })}
+                </select>
+            </div>
             <div className='books relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-12'>
-                {books.map((bookWrapper, index) => {
+                {filteredBooks.map((bookWrapper, index) => {
                     const book = bookWrapper.book // Aquí extraemos el objeto book
                     return (
                         <Book
