@@ -99,23 +99,15 @@ export function Library() {
 
 
     const applyFilters = (genre, pages) => {
-        // Create a copy of the books array
         const originalBooks = [...books];
-
-        // Create a filtered array, starting with all the books
         let filtered = originalBooks;
 
-        // If the genre is not 'all', filter the array to contain only books
-        // with the chosen genre
         if (genre !== 'all') {
             filtered = filtered.filter(book => book.book.genre.toLowerCase() === genre)
         }
 
-        // Filter the array to contain only books with less than or equal to
-        // the chosen number of pages
         filtered = filtered.filter(book => book.book.pages <= pages);
 
-        // Update the state to contain the filtered array
         setFilteredBooks(filtered);
     }
 
