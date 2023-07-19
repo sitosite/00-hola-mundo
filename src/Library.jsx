@@ -3,6 +3,7 @@ import { Book } from './components/Book.jsx'
 
 export function Library() {
     const [books, setBooks] = useState([])
+    const [genreFilter, setGenreFilter] = useState('all')
     const [filteredBooks, setFilteredBooks] = useState([])
     const [readingBooks, setReadingBooks] = useState(() => {
         // Obtenemos el array de libros que estamos leyendo del localStorage
@@ -11,6 +12,8 @@ export function Library() {
         return []
     })
     const [genres, setGenres] = useState([]) // [ 'fantasia', 'terror', 'ciencia ficcion'
+    const [maxPages, setMaxPages] = useState(0)
+    const [sliderValue, setSliderValue] = useState(maxPages)
 
     // Hacemos la petición a la API cuando inicia el componente
     useEffect(() => {
@@ -38,6 +41,10 @@ export function Library() {
         const genresSet = new Set(genresMap)
         const genresArray = [...genresSet]
         setGenres(genresArray)
+
+        const topPages = Math.max(...books.map(book => book.book.pages))
+        setMaxPages(topPages)
+        setSliderValue(topPages)
     }, [books])
 
     // Sincronizar pestañas abiertas
@@ -90,6 +97,28 @@ export function Library() {
         localStorage.removeItem('readingBooks')
     }
 
+
+    const applyFilters = (genre, pages) => {
+        // Create a copy of the books array
+        const originalBooks = [...books];
+
+        // Create a filtered array, starting with all the books
+        let filtered = originalBooks;
+
+        // If the genre is not 'all', filter the array to contain only books
+        // with the chosen genre
+        if (genre !== 'all') {
+            filtered = filtered.filter(book => book.book.genre.toLowerCase() === genre)
+        }
+
+        // Filter the array to contain only books with less than or equal to
+        // the chosen number of pages
+        filtered = filtered.filter(book => book.book.pages <= pages);
+
+        // Update the state to contain the filtered array
+        setFilteredBooks(filtered);
+    }
+
     // Renderizamos los libros
     return (
         <div className='library w-11/12 mx-auto bg-light-bg p-20 px-6 md:px-20 rounded-[40px] shadow-[0_0_60px_60px_rgba(0,0,0,0.1)]'>
@@ -103,14 +132,22 @@ export function Library() {
                 </div>
             </div>
             <div className="filters flex gap-4 mb-6">
+                <input
+                    type="range"
+                    min="0"
+                    max={maxPages}
+                    value={sliderValue}
+                    step="10"
+                    onChange={(e) => {
+                        const pages = Number(e.target.value);
+                        setSliderValue(pages);
+                        applyFilters(genreFilter, pages);
+                    }}
+                />
                 <select className='border py-1 px-2' onChange={(e) => {
                     const genre = e.target.value.toLowerCase()
-                    if (genre === 'all') {
-                        setFilteredBooks(books)
-                    } else {
-                        const originalBooks = [...books]
-                        setFilteredBooks(originalBooks.filter(book => book.book.genre.toLowerCase() === genre))
-                    }
+                    setGenreFilter(genre);
+                    applyFilters(genre, sliderValue);
                 }}>
                     <option value="all">Todos los géneros</option>
                     {genres.map((genre, index) => {
